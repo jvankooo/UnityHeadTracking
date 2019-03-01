@@ -30,7 +30,7 @@ while 1:
         for (ex, ey, ew, eh) in eyes:
             cv2.rectangle(roi_color, (ex, ey), (ex + ew, ey + eh), (0, 255, 0), 2)
             print('X=', ex+(ew/2), 'Y=', ey+(eh/2), "\n")
-            data = str(ex+(ew/2)) + 'n' + str(ey+(ey/2))
+            data = str(ex+(ew/2)) + 'n' + str(ey+(eh/2))
             sock.sendto(data.encode(), (UDP_IP, UDP_PORT))
 
     cv2.imshow('img', img)
