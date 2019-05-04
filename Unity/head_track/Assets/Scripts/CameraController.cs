@@ -53,10 +53,10 @@ public class CameraController : MonoBehaviour {
 		add(text);
 
     	} 
-    catch(Exception e)
-    {
-      print (e.ToString());
-    }
+    	catch(Exception e)
+    	{
+      	print (e.ToString());
+    	}
   }
 }
 	// add data
@@ -77,5 +77,28 @@ public class CameraController : MonoBehaviour {
 		// rotate
 		transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.Euler(rotateValue), rotationSpeed*Time.deltaTime);
 	}
+
+	void Update()
+    {
+        // check button "s" to abort the read-thread
+        if (Input.GetKeyDown("x"))
+            stopThread();
+    }
+
+    // Unity Application Quit Function
+    void OnApplicationQuit()
+    {
+        stopThread();
+    }
+
+    // Stop reading UDP messages
+    private void stopThread()
+    {
+        if (receiveThread.IsAlive)
+        {
+            receiveThread.Abort();
+        }
+        client.Close();
+    }
 
 }
