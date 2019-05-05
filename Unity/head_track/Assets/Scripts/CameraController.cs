@@ -16,8 +16,10 @@ public class CameraController : MonoBehaviour {
 	int port;
 	float angleX;
 	float angleY;
-	Vector3 rotateValue;
-	public float rotationSpeed = 10f;
+	float zoom;
+	Vector3 rotateValue, moveVal;
+	public float rotationSpeed = 5f;
+	public float threshHold = 0f;
 
 	// 2. Initialize variables
 	void Start () 	
@@ -62,28 +64,37 @@ public class CameraController : MonoBehaviour {
 	// add data
 	private void add(string text)
 	{
-		int splitN = text.IndexOf("n");
-		// set angles by splitting string
-		angleX = float.Parse(text.Substring(0, splitN));
-		angleY = float.Parse(text.Substring(splitN+1, text.Length -1 -splitN));
-		print("X = " + angleX + "Y = " + angleY);
+		string[] arr = text.Split('n');
+		angleX = float.Parse(arr[0]);
+		angleY = float.Parse(arr[1]);
+		zoom = float.Parse(arr[2]);
+		print("X = " + angleX + " Y = " + angleY + " A = " + zoom);
 	}
+	
 	// rotate camera
-
 	void LateUpdate () 
 	{
 		// get angle vector
 		rotateValue = new Vector3(-angleY, angleX, 0);
-		// rotate
-		transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.Euler(rotateValue), rotationSpeed*Time.deltaTime);
-	}
+		// get move vector
+		moveVal = new Vector3(0f, 0f, zoom);
 
-	void Update()
-    {
-        // check button "s" to abort the read-thread
-        if (Input.GetKeyDown("x"))
-            stopThread();
-    }
+		Vector3 currentRotation = transform.rotation.eulerAngles;
+		Vector3 angleChange = currentRotation - rotateValue;
+		Vector3 zoomChange = transform.position - moveVal;
+
+		// // move in z
+		// if(zoomChange.magnitude >= 2f){
+		// 	transform.position = Vector3.Lerp(new Vector3 (0f,0f,0f), moveVal, 0.1f*Time.deltaTime);
+		// }
+		
+
+		// rotate
+		if(angleChange.magnitude >= threshHold){
+			transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.Euler(rotateValue), rotationSpeed*Time.deltaTime);
+		}
+		
+	}
 
     // Unity Application Quit Function
     void OnApplicationQuit()
